@@ -1,0 +1,402 @@
+{
+  "TXN-00000010": {
+    "defect": "missing_required_field",
+    "severity": "critical"
+  },
+  "TXN-00000021": {
+    "defect": "date_logic_violation",
+    "severity": "critical"
+  },
+  "TXN-00000026": {
+    "defect": "duplicate_transaction",
+    "severity": "critical"
+  },
+  "TXN-00000035": {
+    "defect": "amount_sign_mismatch",
+    "severity": "warning"
+  },
+  "TXN-00000061": {
+    "defect": "date_logic_violation",
+    "severity": "critical"
+  },
+  "TXN-00000070": {
+    "defect": "orphaned_refund",
+    "severity": "critical"
+  },
+  "TXN-00000101": {
+    "defect": "orphaned_refund",
+    "severity": "critical"
+  },
+  "TXN-00000102": {
+    "defect": "missing_required_field",
+    "severity": "critical"
+  },
+  "TXN-00000137": {
+    "defect": "orphaned_refund",
+    "severity": "critical"
+  },
+  "TXN-00000138": {
+    "defect": "zero_value_transaction",
+    "severity": "warning"
+  },
+  "TXN-00000145": {
+    "defect": "missing_required_field",
+    "severity": "critical"
+  },
+  "TXN-00000174": {
+    "defect": "invalid_enum_value",
+    "severity": "warning"
+  },
+  "TXN-00000196": {
+    "defect": "zero_value_transaction",
+    "severity": "warning"
+  },
+  "TXN-00000243": {
+    "defect": "duplicate_transaction",
+    "severity": "critical"
+  },
+  "TXN-00000249": {
+    "defect": "amount_sign_mismatch",
+    "severity": "warning"
+  },
+  "TXN-00000259": {
+    "defect": "amount_sign_mismatch",
+    "severity": "warning"
+  },
+  "TXN-00000301": {
+    "defect": "missing_required_field",
+    "severity": "critical"
+  },
+  "TXN-00000317": {
+    "defect": "zero_value_transaction",
+    "severity": "warning"
+  },
+  "TXN-00000354": {
+    "defect": "orphaned_refund",
+    "severity": "critical"
+  },
+  "TXN-00000384": {
+    "defect": "amount_sign_mismatch",
+    "severity": "warning"
+  },
+  "TXN-00000389": {
+    "defect": "amount_sign_mismatch",
+    "severity": "warning"
+  },
+  "TXN-00000410": {
+    "defect": "date_logic_violation",
+    "severity": "critical"
+  },
+  "TXN-00000442": {
+    "defect": "amount_sign_mismatch",
+    "severity": "warning"
+  },
+  "TXN-00000446": {
+    "defect": "amount_sign_mismatch",
+    "severity": "warning"
+  },
+  "TXN-00000465": {
+    "defect": "amount_sign_mismatch",
+    "severity": "warning"
+  },
+  "TXN-00000506": {
+    "defect": "zero_value_transaction",
+    "severity": "warning"
+  },
+  "TXN-00000508": {
+    "defect": "invalid_enum_value",
+    "severity": "warning"
+  },
+  "TXN-00000516": {
+    "defect": "status_amount_inconsistency",
+    "severity": "warning"
+  },
+  "TXN-00000522": {
+    "defect": "invalid_enum_value",
+    "severity": "warning"
+  },
+  "TXN-00000583": {
+    "defect": "date_logic_violation",
+    "severity": "critical"
+  },
+  "TXN-00000594": {
+    "defect": "orphaned_refund",
+    "severity": "critical"
+  },
+  "TXN-00000610": {
+    "defect": "orphaned_refund",
+    "severity": "critical"
+  },
+  "TXN-00000616": {
+    "defect": "duplicate_transaction",
+    "severity": "critical"
+  },
+  "TXN-00000617": {
+    "defect": "status_amount_inconsistency",
+    "severity": "warning"
+  },
+  "TXN-00000625": {
+    "defect": "duplicate_transaction",
+    "severity": "critical"
+  },
+  "TXN-00000657": {
+    "defect": "invalid_enum_value",
+    "severity": "warning"
+  },
+  "TXN-00000671": {
+    "defect": "zero_value_transaction",
+    "severity": "warning"
+  },
+  "TXN-00000763": {
+    "defect": "date_logic_violation",
+    "severity": "critical"
+  },
+  "TXN-00000817": {
+    "defect": "duplicate_transaction",
+    "severity": "critical"
+  },
+  "TXN-00000819": {
+    "defect": "orphaned_refund",
+    "severity": "critical"
+  },
+  "TXN-00000825": {
+    "defect": "duplicate_transaction",
+    "severity": "critical"
+  },
+  "TXN-00000889": {
+    "defect": "status_amount_inconsistency",
+    "severity": "warning"
+  },
+  "TXN-00000924": {
+    "defect": "invalid_enum_value",
+    "severity": "warning"
+  },
+  "TXN-00000951": {
+    "defect": "missing_required_field",
+    "severity": "critical"
+  },
+  "TXN-00000956": {
+    "defect": "status_amount_inconsistency",
+    "severity": "warning"
+  },
+  "TXN-00000978": {
+    "defect": "status_amount_inconsistency",
+    "severity": "warning"
+  },
+  "TXN-00001015": {
+    "defect": "status_amount_inconsistency",
+    "severity": "warning"
+  },
+  "TXN-00001055": {
+    "defect": "invalid_enum_value",
+    "severity": "warning"
+  },
+  "TXN-00001072": {
+    "defect": "orphaned_refund",
+    "severity": "critical"
+  },
+  "TXN-00001076": {
+    "defect": "orphaned_refund",
+    "severity": "critical"
+  },
+  "TXN-00001082": {
+    "defect": "duplicate_transaction",
+    "severity": "critical"
+  },
+  "TXN-00001123": {
+    "defect": "orphaned_refund",
+    "severity": "critical"
+  },
+  "TXN-00001133": {
+    "defect": "date_logic_violation",
+    "severity": "critical"
+  },
+  "TXN-00001139": {
+    "defect": "status_amount_inconsistency",
+    "severity": "warning"
+  },
+  "TXN-00001156": {
+    "defect": "amount_sign_mismatch",
+    "severity": "warning"
+  },
+  "TXN-00001205": {
+    "defect": "amount_sign_mismatch",
+    "severity": "warning"
+  },
+  "TXN-00001228": {
+    "defect": "duplicate_transaction",
+    "severity": "critical"
+  },
+  "TXN-00001236": {
+    "defect": "invalid_enum_value",
+    "severity": "warning"
+  },
+  "TXN-00001246": {
+    "defect": "missing_required_field",
+    "severity": "critical"
+  },
+  "TXN-00001252": {
+    "defect": "zero_value_transaction",
+    "severity": "warning"
+  },
+  "TXN-00001264": {
+    "defect": "status_amount_inconsistency",
+    "severity": "warning"
+  },
+  "TXN-00001336": {
+    "defect": "date_logic_violation",
+    "severity": "critical"
+  },
+  "TXN-00001337": {
+    "defect": "zero_value_transaction",
+    "severity": "warning"
+  },
+  "TXN-00001349": {
+    "defect": "status_amount_inconsistency",
+    "severity": "warning"
+  },
+  "TXN-00001355": {
+    "defect": "invalid_enum_value",
+    "severity": "warning"
+  },
+  "TXN-00001431": {
+    "defect": "missing_required_field",
+    "severity": "critical"
+  },
+  "TXN-00001455": {
+    "defect": "amount_sign_mismatch",
+    "severity": "warning"
+  },
+  "TXN-00001484": {
+    "defect": "amount_sign_mismatch",
+    "severity": "warning"
+  },
+  "TXN-00001498": {
+    "defect": "missing_required_field",
+    "severity": "critical"
+  },
+  "TXN-00001504": {
+    "defect": "status_amount_inconsistency",
+    "severity": "warning"
+  },
+  "TXN-00001505": {
+    "defect": "zero_value_transaction",
+    "severity": "warning"
+  },
+  "TXN-00001510": {
+    "defect": "zero_value_transaction",
+    "severity": "warning"
+  },
+  "TXN-00001518": {
+    "defect": "zero_value_transaction",
+    "severity": "warning"
+  },
+  "TXN-00001528": {
+    "defect": "zero_value_transaction",
+    "severity": "warning"
+  },
+  "TXN-00001530": {
+    "defect": "duplicate_transaction",
+    "severity": "critical"
+  },
+  "TXN-00001540": {
+    "defect": "date_logic_violation",
+    "severity": "critical"
+  },
+  "TXN-00001566": {
+    "defect": "status_amount_inconsistency",
+    "severity": "warning"
+  },
+  "TXN-00001600": {
+    "defect": "status_amount_inconsistency",
+    "severity": "warning"
+  },
+  "TXN-00001621": {
+    "defect": "status_amount_inconsistency",
+    "severity": "warning"
+  },
+  "TXN-00001623": {
+    "defect": "amount_sign_mismatch",
+    "severity": "warning"
+  },
+  "TXN-00001654": {
+    "defect": "amount_sign_mismatch",
+    "severity": "warning"
+  },
+  "TXN-00001666": {
+    "defect": "zero_value_transaction",
+    "severity": "warning"
+  },
+  "TXN-00001682": {
+    "defect": "date_logic_violation",
+    "severity": "critical"
+  },
+  "TXN-00001721": {
+    "defect": "zero_value_transaction",
+    "severity": "warning"
+  },
+  "TXN-00001747": {
+    "defect": "duplicate_transaction",
+    "severity": "critical"
+  },
+  "TXN-00001772": {
+    "defect": "status_amount_inconsistency",
+    "severity": "warning"
+  },
+  "TXN-00001776": {
+    "defect": "date_logic_violation",
+    "severity": "critical"
+  },
+  "TXN-00001784": {
+    "defect": "status_amount_inconsistency",
+    "severity": "warning"
+  },
+  "TXN-00001834": {
+    "defect": "duplicate_transaction",
+    "severity": "critical"
+  },
+  "TXN-00001837": {
+    "defect": "orphaned_refund",
+    "severity": "critical"
+  },
+  "TXN-00001874": {
+    "defect": "invalid_enum_value",
+    "severity": "warning"
+  },
+  "TXN-00001877": {
+    "defect": "missing_required_field",
+    "severity": "critical"
+  },
+  "TXN-00001905": {
+    "defect": "invalid_enum_value",
+    "severity": "warning"
+  },
+  "TXN-00001917": {
+    "defect": "duplicate_transaction",
+    "severity": "critical"
+  },
+  "TXN-00001934": {
+    "defect": "duplicate_transaction",
+    "severity": "critical"
+  },
+  "TXN-00001941": {
+    "defect": "invalid_enum_value",
+    "severity": "warning"
+  },
+  "TXN-00001949": {
+    "defect": "amount_sign_mismatch",
+    "severity": "warning"
+  },
+  "TXN-00001960": {
+    "defect": "missing_required_field",
+    "severity": "critical"
+  },
+  "TXN-00001992": {
+    "defect": "duplicate_transaction",
+    "severity": "critical"
+  },
+  "TXN-00001999": {
+    "defect": "missing_required_field",
+    "severity": "critical"
+  }
+}
