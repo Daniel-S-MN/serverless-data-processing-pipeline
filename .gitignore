@@ -227,6 +227,7 @@ data/sample/benchmark_transactions.csv
 *.tfstate.*
 *.tfvars
 crash.log
+terraform/build/
 
 .aws/
 *.pem

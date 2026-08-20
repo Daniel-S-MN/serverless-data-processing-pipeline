@@ -3,7 +3,7 @@ CLI for generating transaction datasets.
 
 Two modes, sharing the same clean-record generator and schema:
 
-  --mode seeded     Small dataset with intentionally injected, tracked
+  --mode seeded      Small dataset with intentionally injected, tracked
                      defects. This is the "daily file" stand-in that
                      flows through the actual pipeline in tests/demos.
                      Produces two files: the CSV and a JSON defect
