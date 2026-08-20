@@ -65,3 +65,41 @@ python src/generate_dataset.py --mode seeded --rows 2000 --defect-rate 0.05 --se
 # Benchmark dataset (large, mostly clean — regenerate locally, not committed)
 python src/generate_dataset.py --mode benchmark --rows 500000 --seed 42
 ```
+## Infrastructure
+
+All AWS resources are provisioned with Terraform — nothing is created manually in the console. The project uses a **shared remote state backend** (S3 + DynamoDB), provisioned once via a separate [`portfolio-shared-infra`](../portfolio-shared-infra) repository rather than duplicating a state bucket per project. See that repo's README for why the backend has to be bootstrapped separately.
+
+### Bucket Layout
+
+One S3 bucket, three key prefixes (S3 has no real folders — these are prefixes on object keys):
+
+| Prefix | Purpose |
+|---|---|
+| `incoming/` | Where a partner's daily CSV is dropped. Any `.csv` object created here triggers processing. |
+| `processed/` | Successfully validated/transformed output. Objects here expire automatically after 90 days via a lifecycle rule. |
+| `quarantine/` | Files rejected before processing even begins (e.g. filename doesn't match the expected convention). Not yet used by the placeholder handler — reserved for the upcoming filename-validation step. |
+
+### Trigger Design
+
+S3 invokes the Lambda directly on `s3:ObjectCreated:*` events, filtered to `incoming/` + `.csv` so it never fires on writes to `processed/`/`quarantine/` or on a stray non-CSV file. SQS/DLQ (required by the project brief) is intentionally reserved for *failure handling once Lambda is already running*, not as plumbing between S3 and Lambda — keeping the trigger itself as simple as possible.
+
+### IAM
+
+- **Lambda execution role** — least-privilege: `s3:GetObject` scoped to `incoming/*` only, `s3:PutObject` scoped to `processed/*` and `quarantine/*` only. No delete permission, no wildcard bucket access.
+- **`aws_lambda_permission` (S3 invoke permission)** — a separate resource-based policy from the execution role above, explicitly granting the S3 service principal permission to invoke this specific Lambda, scoped to this bucket's ARN. This is the piece that's easy to forget when wiring an S3→Lambda trigger manually — without it, the event notification silently does nothing.
+- **Local development** uses a dedicated, scoped IAM user (not an admin/root account) for running Terraform.
+
+### State Backend Note
+
+This project intentionally uses **local state for nothing** — all state is remote, in the shared backend, from the first `apply`. The one exception in the whole portfolio is `portfolio-shared-infra` itself, which has to use local state since it's what creates the remote backend everything else depends on.
+
+### Verified
+
+The S3 → Lambda trigger has been tested end-to-end: uploading a CSV to `incoming/` produces a CloudWatch Logs entry confirming the Lambda received the correct bucket/key, within milliseconds of the upload.
+
+### Still To Build
+
+- Filename-convention validation + quarantine routing (first real logic in the handler)
+- Transformation/validation logic (Polars primary, Pandas comparison for benchmarking)
+- SQS + dead-letter queue for failure handling
+- GitHub Actions CI (tests only) and a separate, manually-gated deploy workflow
