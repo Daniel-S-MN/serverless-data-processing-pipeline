@@ -70,6 +70,25 @@ resource "aws_iam_role_policy" "lambda_s3_access" {
   })
 }
 
+# Permission to publish rejected-file alerts to the SNS topic
+# defined in sns.tf. Scoped to that one specific topic ARN, not
+# wildcarded to all SNS topics in the account.
+resource "aws_iam_role_policy" "lambda_sns_publish" {
+  name = "${var.project_name}-${var.environment}-lambda-sns-publish"
+  role = aws_iam_role.lambda_exec.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["sns:Publish"]
+        Resource = aws_sns_topic.rejected_files.arn
+      }
+    ]
+  })
+}
+
 resource "aws_lambda_function" "processor" {
   function_name = "${var.project_name}-${var.environment}-processor"
   role          = aws_iam_role.lambda_exec.arn
@@ -83,8 +102,9 @@ resource "aws_lambda_function" "processor" {
 
   environment {
     variables = {
-      PROCESSED_PREFIX   = var.processed_prefix
-      QUARANTINE_PREFIX  = var.quarantine_prefix
+      PROCESSED_PREFIX  = var.processed_prefix
+      QUARANTINE_PREFIX = var.quarantine_prefix
+      SNS_TOPIC_ARN     = aws_sns_topic.rejected_files.arn
     }
   }
 }

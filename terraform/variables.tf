@@ -51,3 +51,13 @@ variable "lambda_memory_mb" {
   type        = number
   default     = 256
 }
+
+# --- SNS (rejected-file notifications) ---
+
+variable "notification_email" {
+  description = "Email address subscribed to rejected-file alerts. AWS will send a one-time confirmation email to this address after 'terraform apply' — the subscription won't deliver anything until that link is clicked."
+  type        = string
+  # No default on purpose - this is personal, not something to
+  # hardcode/commit. Set it via terraform.tfvars (gitignored) or
+  # -var on the command line.
+}

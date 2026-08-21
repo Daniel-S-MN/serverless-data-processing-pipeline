@@ -93,13 +93,30 @@ S3 invokes the Lambda directly on `s3:ObjectCreated:*` events, filtered to `inco
 
 This project intentionally uses **local state for nothing** — all state is remote, in the shared backend, from the first `apply`. The one exception in the whole portfolio is `portfolio-shared-infra` itself, which has to use local state since it's what creates the remote backend everything else depends on.
 
+### Filename Validation & Rejection Alerts
+
+The handler's first real logic validates every incoming object key against a required naming convention before anything else happens:
+
+```
+transactions_{YYYY-MM-DD}_{partner_batch_id}.csv
+```
+
+- **Matches:** logged as valid; falls through to processing (currently a placeholder — see "Still To Build").
+- **Doesn't match:** the handler publishes an alert to an SNS topic (`aws_sns_topic.rejected_files`) with the bucket and key, then returns. The file is **deliberately left untouched** in `incoming/` — no automatic quarantine copy or delete.
+
+This is a scope decision, not an oversight: automated **detection**, human-driven **remediation**. A person receives the email alert and handles the file manually via the AWS Console (rename, move, or delete as appropriate). This sidesteps needing "safe move" logic (copy-then-delete-only-on-confirmed-success) inside the handler for a case that, in practice, needs a human decision anyway.
+
+SNS email subscriptions require a one-time manual confirmation click (sent by AWS after `terraform apply`) before delivery starts — this can't be automated by design, since it's meant to prevent subscribing an address you don't own.
+
+The Lambda's IAM policy grants `sns:Publish` scoped to this one topic ARN only — not a wildcard across all SNS topics in the account.
+
 ### Verified
 
-The S3 → Lambda trigger has been tested end-to-end: uploading a CSV to `incoming/` produces a CloudWatch Logs entry confirming the Lambda received the correct bucket/key, within milliseconds of the upload.
+- **S3 → Lambda trigger:** uploading a CSV to `incoming/` produces a CloudWatch Logs entry confirming the Lambda received the correct bucket/key, within milliseconds of the upload.
+- **Filename validation, both branches:** an incorrectly-named file (`seeded_transactions.csv`) produced a `WARNING` log, an SNS publish, and a real email delivered to the subscribed address with the correct bucket/key. A correctly-named file (`transactions_2026-08-21_TESTBATCH.csv`) logged `Filename valid - would proceed to processing` with no alert.
 
 ### Still To Build
 
-- Filename-convention validation + quarantine routing (first real logic in the handler)
-- Transformation/validation logic (Polars primary, Pandas comparison for benchmarking)
-- SQS + dead-letter queue for failure handling
+- Real transformation/validation logic replacing the "would proceed to processing" placeholder (Polars primary, Pandas comparison for benchmarking)
+- SQS + dead-letter queue for failure handling (during/after processing, not as the S3→Lambda trigger mechanism itself)
 - GitHub Actions CI (tests only) and a separate, manually-gated deploy workflow
