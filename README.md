@@ -110,13 +110,29 @@ SNS email subscriptions require a one-time manual confirmation click (sent by AW
 
 The Lambda's IAM policy grants `sns:Publish` scoped to this one topic ARN only — not a wildcard across all SNS topics in the account.
 
+### Filename Date Staleness
+
+Once a filename passes the convention check, its embedded date is compared against today's date. If it's more than 3 days in the past or future, the handler logs a `WARNING` — but this **does not block processing**. A backfilled or weekend-delayed file is a legitimate case, not a failure; the check exists to surface an anomaly for a human to glance at, not to gate the pipeline. This mirrors the critical/warning severity split already used in the dataset's defect taxonomy, just applied to the filename rather than row data.
+
+### Reprocessing Detection
+
+Output is written to `processed/{partner_batch_id}/`, keyed by the batch ID embedded in the filename — not a flat filename in `processed/`. This makes "has this batch already been processed" a cheap existence check (`s3:ListBucket` scoped to the `processed/` prefix, `MaxKeys=1`) rather than requiring a separate tracking mechanism.
+
+If a file arrives for a batch that's already been processed (e.g. a corrected afternoon resubmission of a morning file), the handler:
+- Logs a `WARNING` identifying the batch
+- Publishes an SNS alert (reusing the same topic as rejection alerts, with a distinct subject/message)
+- **Still allows processing to proceed** — the eventual write overwrites the prior result, but never silently. This addresses the brief's "idempotency" stretch goal (item under Project 1) from a slightly different angle: not preventing duplicate processing outright, but ensuring any reprocessing is deliberate and auditable rather than invisible.
+
 ### Verified
 
 - **S3 → Lambda trigger:** uploading a CSV to `incoming/` produces a CloudWatch Logs entry confirming the Lambda received the correct bucket/key, within milliseconds of the upload.
-- **Filename validation, both branches:** an incorrectly-named file (`seeded_transactions.csv`) produced a `WARNING` log, an SNS publish, and a real email delivered to the subscribed address with the correct bucket/key. A correctly-named file (`transactions_2026-08-21_TESTBATCH.csv`) logged `Filename valid - would proceed to processing` with no alert.
+- **Filename validation, both branches:** an incorrectly-named file produced a `WARNING` log, an SNS publish, and a real email delivered to the subscribed address with the correct bucket/key. A correctly-named file logged `Filename valid - would proceed to processing` with no alert.
+- **Staleness check:** a fresh (same-day) filename produced no warning; a filename dated outside the 3-day threshold correctly logged a staleness `WARNING` without blocking processing.
+- **Reprocessing detection:** with a dummy object manually placed under `processed/{batch_id}/`, re-uploading the same batch ID correctly logged a reprocessing `WARNING` and delivered a real "Reprocessing Detected" email with the correct batch ID.
 
 ### Still To Build
 
-- Real transformation/validation logic replacing the "would proceed to processing" placeholder (Polars primary, Pandas comparison for benchmarking)
+- Real transformation/validation logic replacing the "would proceed to processing" placeholder — reading the CSV into Polars, validating against the schema and defect taxonomy, splitting valid/invalid rows, writing `transactions.csv` + `summary.json` to `processed/{partner_batch_id}/`
+- Pandas comparison for the benchmark report
 - SQS + dead-letter queue for failure handling (during/after processing, not as the S3→Lambda trigger mechanism itself)
 - GitHub Actions CI (tests only) and a separate, manually-gated deploy workflow

@@ -65,6 +65,22 @@ resource "aws_iam_role_policy" "lambda_s3_access" {
           "${aws_s3_bucket.data.arn}/${var.processed_prefix}*",
           "${aws_s3_bucket.data.arn}/${var.quarantine_prefix}*",
         ]
+      },
+      {
+        # ListBucket is a BUCKET-level permission (unlike GetObject/
+        # PutObject above, which are object-level) - it's what
+        # list_objects_v2 needs to check whether a given batch has
+        # already been processed, before writing new output. The
+        # Condition restricts it to only listing under processed/,
+        # not the whole bucket.
+        Effect   = "Allow"
+        Action   = ["s3:ListBucket"]
+        Resource = aws_s3_bucket.data.arn
+        Condition = {
+          StringLike = {
+            "s3:prefix" = "${var.processed_prefix}*"
+          }
+        }
       }
     ]
   })
