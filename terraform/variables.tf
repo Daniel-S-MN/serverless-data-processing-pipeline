@@ -52,6 +52,12 @@ variable "lambda_memory_mb" {
   default     = 256
 }
 
+variable "max_file_size_mb" {
+  description = "Files larger than this are rejected (alert sent) rather than processed - a daily partner file this large is itself an anomaly worth a human looking at."
+  type        = number
+  default     = 25
+}
+
 # --- SNS (rejected-file notifications) ---
 
 variable "notification_email" {

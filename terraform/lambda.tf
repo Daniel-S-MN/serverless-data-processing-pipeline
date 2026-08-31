@@ -1,18 +1,31 @@
 # terraform/lambda.tf
 #
-# Placeholder Lambda for now — src/lambda/handler.py just logs the
-# event it received. This phase is about proving the S3 -> Lambda
-# trigger works end-to-end; the real filename-validation and
-# transformation logic replaces this handler in a later phase.
+# Lambda handler performs filename validation, staleness/reprocessing
+# checks, and (next phase) real transformation/validation logic.
 
-# Zips the handler source into a deployable package. Using
-# archive_file (a Terraform built-in data source, no extra provider
-# needed) instead of a manual zip step keeps packaging part of
-# `terraform apply` rather than a separate script to remember to run.
+# Zips the handler source into a deployable package. Pulls files
+# individually from two different directories (src/lambda AND the
+# shared src/schema.py) rather than one source_dir, so schema.py
+# stays a single source of truth used by both the dataset generator
+# and the Lambda — no duplicate copy maintained on disk.
 data "archive_file" "lambda_package" {
   type        = "zip"
-  source_dir  = "${path.module}/../src/lambda"
   output_path = "${path.module}/build/lambda_package.zip"
+
+  source {
+    content  = file("${path.module}/../src/lambda/handler.py")
+    filename = "handler.py"
+  }
+
+  source {
+    content  = file("${path.module}/../src/lambda/validation.py")
+    filename = "validation.py"
+  }
+
+  source {
+    content  = file("${path.module}/../src/schema.py")
+    filename = "schema.py"
+  }
 }
 
 # --- Execution role: what the Lambda is allowed to DO once running ---
@@ -121,6 +134,7 @@ resource "aws_lambda_function" "processor" {
       PROCESSED_PREFIX  = var.processed_prefix
       QUARANTINE_PREFIX = var.quarantine_prefix
       SNS_TOPIC_ARN     = aws_sns_topic.rejected_files.arn
+      MAX_FILE_SIZE_MB  = var.max_file_size_mb
     }
   }
 }
