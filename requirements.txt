@@ -1,0 +1,9 @@
+# Dependencies needed to run the deployed pipeline (the Lambda handler
+# and validation logic in src/lambda/).
+#
+# Currently empty on purpose: the Lambda uses only Python's standard
+# library plus boto3, and boto3 ships pre-installed with AWS Lambda's
+# Python runtimes - it never needs to be packaged or installed here.
+#
+# See requirements-dev.txt for dependencies needed to develop, test,
+# or benchmark this project locally (pandas, polars, pytest).

@@ -1,0 +1,6 @@
+# Dependencies needed for local development, benchmarking, and
+# testing - NOT deployed with the Lambda (see requirements.txt for
+# what actually ships in production).
+
+pandas
+polars

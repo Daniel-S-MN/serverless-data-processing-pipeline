@@ -147,7 +147,9 @@ Verified against the real seeded dataset: all 40 manifest-injected defects were 
 
 The brief calls for Polars as the primary processing library, but Polars isn't part of AWS's standard Lambda Python runtime the way `boto3` is — packaging it into a Lambda genuinely requires either a Lambda Layer (built against Amazon Linux's architecture, not whatever your laptop produces) or switching to a container image deployment instead of a zip. Both are real, valid patterns, but meaningfully bigger infrastructure lifts than this project's scope calls for.
 
-**Decision:** the deployed Lambda's actual transformation/validation logic stays plain Python (stdlib `csv`, no external dependencies beyond `boto3`, which ships with the runtime) — genuinely appropriate for Lambda's execution model and easy to package with a plain zip. Polars (and the Pandas comparison) is used specifically for the benchmark report (brief item 11), run as a **standalone local script** against the large benchmark dataset, entirely separate from the deployed Lambda. This keeps "the Lambda runs reliably in production" and "we're benchmarking two libraries against each other" as two separate concerns rather than conflating them — heavier dataframe processing at real scale would belong on AWS Glue or ECS/Fargate, not Lambda, regardless of which library was used.
+**Decision:** the deployed Lambda's actual transformation/validation logic stays plain Python (stdlib `csv`, no external dependencies beyond `boto3`, which ships with the runtime) — genuinely appropriate for Lambda's execution model and easy to package with a plain zip. Polars (and the Pandas comparison) is used specifically for the benchmark report (brief item 11), run as a **standalone local script** against three dataset sizes, entirely separate from the deployed Lambda. This keeps "the Lambda runs reliably in production" and "we're benchmarking two libraries against each other" as two separate concerns rather than conflating them — heavier dataframe processing at real scale would belong on AWS Glue or ECS/Fargate, not Lambda, regardless of which library was used.
+
+Full methodology, results, and an honest discussion of what was and wasn't expected: **[`docs/benchmark_report.md`](docs/benchmark_report.md)**. Headline result: Polars was 5-6x faster than Pandas across all three tested sizes (50K/500K/2M rows) — notably, the speed advantage was already present at the smallest size, not something that only appears past some threshold — but used 36-38% *more* peak memory at medium/large scale, which was the more genuinely surprising finding and is flagged in the report as not fully explained.
 
 ### Packaging
 
@@ -163,7 +165,20 @@ The brief calls for Polars as the primary processing library, but Polars isn't p
 
 ### Still To Build
 
-- Pandas vs. Polars benchmark script (standalone, run locally against the large benchmark dataset) + written comparison report
 - SQS + dead-letter queue for failure handling (during/after processing, not as the S3→Lambda trigger mechanism itself)
 - GitHub Actions CI (tests only) and a separate, manually-gated deploy workflow
 - Formal unit/integration test suite for `validation.py` and `handler.py` (current testing has been manual, against real data, ad hoc)
+
+### Running Code Locally
+
+`src/lambda/validation.py` and `src/lambda/handler.py` import `schema.py` from `src/`, not `src/lambda/` — this works automatically once deployed (the Lambda's zip flattens all three into one directory, see "Packaging" above), but running or testing this code locally requires telling Python to also look in `src/`:
+
+```bash
+PYTHONPATH=src python3 scripts/benchmark.py
+```
+
+Dev/benchmark dependencies (`pandas`, `polars`) are in `requirements-dev.txt`, kept separate from `requirements.txt` (what the deployed Lambda actually needs — currently near-empty, since it only uses `boto3`, which ships with the Lambda runtime):
+
+```bash
+pip install -r requirements-dev.txt
+```

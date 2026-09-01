@@ -1,0 +1,187 @@
+{
+  "machine": {
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "processor": "arm",
+    "python_version": "3.14.3",
+    "cpu_count": 10
+  },
+  "runs": {
+    "small": {
+      "rows": 50000,
+      "pandas": {
+        "timing": {
+          "read": {
+            "min_sec": 0.0357,
+            "mean_sec": 0.0364
+          },
+          "parse": {
+            "min_sec": 0.0101,
+            "mean_sec": 0.0105
+          },
+          "validate": {
+            "min_sec": 0.0326,
+            "mean_sec": 0.0334
+          },
+          "aggregate": {
+            "min_sec": 0.0017,
+            "mean_sec": 0.0018
+          },
+          "total": {
+            "min_sec": 0.0806,
+            "mean_sec": 0.0821
+          }
+        },
+        "memory": {
+          "min_mb": 118.48,
+          "mean_mb": 118.52
+        }
+      },
+      "polars": {
+        "timing": {
+          "read": {
+            "min_sec": 0.0017,
+            "mean_sec": 0.0018
+          },
+          "parse": {
+            "min_sec": 0.0026,
+            "mean_sec": 0.0027
+          },
+          "validate": {
+            "min_sec": 0.0083,
+            "mean_sec": 0.0084
+          },
+          "aggregate": {
+            "min_sec": 0.0006,
+            "mean_sec": 0.0007
+          },
+          "total": {
+            "min_sec": 0.0133,
+            "mean_sec": 0.0135
+          }
+        },
+        "memory": {
+          "min_mb": 118.41,
+          "mean_mb": 119.19
+        }
+      }
+    },
+    "medium": {
+      "rows": 500000,
+      "pandas": {
+        "timing": {
+          "read": {
+            "min_sec": 0.3428,
+            "mean_sec": 0.3477
+          },
+          "parse": {
+            "min_sec": 0.102,
+            "mean_sec": 0.1036
+          },
+          "validate": {
+            "min_sec": 0.4291,
+            "mean_sec": 0.4439
+          },
+          "aggregate": {
+            "min_sec": 0.0195,
+            "mean_sec": 0.0202
+          },
+          "total": {
+            "min_sec": 0.8985,
+            "mean_sec": 0.9153
+          }
+        },
+        "memory": {
+          "min_mb": 363.11,
+          "mean_mb": 363.24
+        }
+      },
+      "polars": {
+        "timing": {
+          "read": {
+            "min_sec": 0.0136,
+            "mean_sec": 0.0142
+          },
+          "parse": {
+            "min_sec": 0.0256,
+            "mean_sec": 0.0261
+          },
+          "validate": {
+            "min_sec": 0.1276,
+            "mean_sec": 0.1311
+          },
+          "aggregate": {
+            "min_sec": 0.0014,
+            "mean_sec": 0.0016
+          },
+          "total": {
+            "min_sec": 0.1694,
+            "mean_sec": 0.173
+          }
+        },
+        "memory": {
+          "min_mb": 498.94,
+          "mean_mb": 501.21
+        }
+      }
+    },
+    "large": {
+      "rows": 2000000,
+      "pandas": {
+        "timing": {
+          "read": {
+            "min_sec": 1.38,
+            "mean_sec": 1.3876
+          },
+          "parse": {
+            "min_sec": 0.4097,
+            "mean_sec": 0.4149
+          },
+          "validate": {
+            "min_sec": 2.0781,
+            "mean_sec": 2.1132
+          },
+          "aggregate": {
+            "min_sec": 0.0796,
+            "mean_sec": 0.0803
+          },
+          "total": {
+            "min_sec": 3.9523,
+            "mean_sec": 3.996
+          }
+        },
+        "memory": {
+          "min_mb": 1216.28,
+          "mean_mb": 1216.37
+        }
+      },
+      "polars": {
+        "timing": {
+          "read": {
+            "min_sec": 0.0551,
+            "mean_sec": 0.0563
+          },
+          "parse": {
+            "min_sec": 0.0996,
+            "mean_sec": 0.1025
+          },
+          "validate": {
+            "min_sec": 0.6185,
+            "mean_sec": 0.6308
+          },
+          "aggregate": {
+            "min_sec": 0.0035,
+            "mean_sec": 0.0038
+          },
+          "total": {
+            "min_sec": 0.7772,
+            "mean_sec": 0.7934
+          }
+        },
+        "memory": {
+          "min_mb": 1642.22,
+          "mean_mb": 1651.83
+        }
+      }
+    }
+  }
+}

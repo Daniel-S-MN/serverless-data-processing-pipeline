@@ -219,7 +219,7 @@ __marimo__/
 
 .idea/
 
-data/sample/benchmark_transactions.csv
+data/sample/benchmark_*.csv
 
 # Terraform
 .terraform/
