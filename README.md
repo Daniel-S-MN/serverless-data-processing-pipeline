@@ -165,8 +165,15 @@ Full methodology, results, and an honest discussion of what was and wasn't expec
 
 ### Still To Build
 
-- SQS + dead-letter queue for failure handling (during/after processing, not as the S3→Lambda trigger mechanism itself)
 - GitHub Actions CI (tests only) and a separate, manually-gated deploy workflow
+
+### Failure Handling: SQS Dead-Letter Queue
+
+Distinct from the SNS alerts above, and worth being precise about the difference: SNS handles *expected, handled* problems (bad filename, oversized file) — the Lambda completes successfully and just chose to notify a human about the data. The SQS queue handles the opposite: genuine *unhandled exceptions* — the Lambda actually crashing.
+
+This isn't the classic "Lambda polls SQS" pattern — S3 invokes this Lambda directly and asynchronously, so there's no queue in front of it to consume from. Instead, the queue is configured as the Lambda's **asynchronous invocation failure destination** (`aws_lambda_function_event_invoke_config`), a distinct AWS concept from SQS's own redrive-policy DLQs. AWS automatically retries a failed async invocation twice; only if both retries also fail does the event land in the queue, carrying the full original event plus AWS's own error message and stack trace. 14-day message retention (SQS's max, not its 4-day default) so a failure isn't silently lost over a long weekend.
+
+**Verified against real AWS**, with a genuinely interesting nuance worth documenting rather than glossing over: manually invoking the Lambda asynchronously (`aws lambda invoke --invocation-type Event`) against a bucket/key that doesn't exist correctly triggered `RetriesExhausted` after 3 total attempts, and the failure landed in the queue as expected. The actual error, however, was `AccessDenied` on `s3:ListBucket`, not the `NoSuchKey` you might expect for a missing object. This is deliberate AWS behavior: `GetObject` on a nonexistent key returns `AccessDenied` rather than `NoSuchKey` when the caller lacks `ListBucket` permission on that bucket — S3 won't confirm or deny an object's existence to someone who isn't allowed to list the bucket's contents. The Lambda's role only has `ListBucket` scoped to `processed/*` (for reprocessing detection), not `incoming/`, which is why this test's fake key produced this specific error. Not a gap worth fixing: in real operation, S3 only invokes this Lambda because a real object was just created, so this failure mode is purely an artifact of a deliberately fake test key — broadening `ListBucket` just to get a "nicer" error on a scenario that can't occur in production would loosen least-privilege for no real benefit.
 
 ### Test Suite
 

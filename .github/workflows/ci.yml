@@ -1,0 +1,63 @@
+name: CI
+
+# Runs on every push and pull request - this is a CORRECTNESS GATE
+# on commits, deliberately separate from deployment. This workflow
+# holds no AWS credentials and never runs `terraform apply` or
+# `terraform plan` - only `validate`, which doesn't need real
+# infrastructure access. See README's Infrastructure section for the
+# fuller reasoning on why CI and deploy are kept as separate concerns.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Python Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12" # matches the Lambda runtime version in terraform/lambda.tf
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run test suite
+        env:
+          PYTHONPATH: src
+          AWS_DEFAULT_REGION: us-east-1 # required by test_handler.py's moto-mocked boto3 clients - no real AWS access
+        run: python3 -m pytest tests/ -v
+
+  terraform-validate:
+    name: Terraform Validate
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: terraform
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.15.8"
+
+      - name: Check formatting
+        run: terraform fmt -check -recursive
+
+      - name: Init without backend
+        # -backend=false skips connecting to the real remote state
+        # backend entirely - this job only checks syntax/config
+        # validity, it has no reason to touch real state or need AWS
+        # credentials.
+        run: terraform init -backend=false
+
+      - name: Validate
+        run: terraform validate
