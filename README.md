@@ -167,7 +167,20 @@ Full methodology, results, and an honest discussion of what was and wasn't expec
 
 - SQS + dead-letter queue for failure handling (during/after processing, not as the S3→Lambda trigger mechanism itself)
 - GitHub Actions CI (tests only) and a separate, manually-gated deploy workflow
-- Formal unit/integration test suite for `validation.py` and `handler.py` (current testing has been manual, against real data, ad hoc)
+
+### Test Suite
+
+`tests/test_validation.py` covers `validation.py` directly — structural checks, each business rule (both triggering and not), the two file-level checks (including regression tests for two bugs found during manual testing — see below), and overall disposition/summary logic. Pure unit tests, no AWS dependency.
+
+`tests/test_handler.py` covers `handler.py`'s full flow using `moto` to mock S3/SNS, rather than hand-rolled stubs — this exercises more realistic AWS behavior (actual bucket/key existence, real `list_objects_v2` semantics) than manually stubbing individual client methods would. Covers filename rejection, oversized-file rejection, reprocessing detection (confirming the write still proceeds, not just that the alert fires), a full valid batch writing both output files with correct content, the empty-`transactions.csv` edge case, a UTF-8 decode failure being caught rather than crashing, and multiple S3 records in one event being processed independently.
+
+**Bugs the test suite caught that manual testing had missed:** writing `test_handler.py`/`test_validation.py` surfaced a real formatting regression — `valid_rows` was returning the *parsed* (typed) version of each row rather than the original raw strings, so `transactions.csv` was writing `25.0` instead of the source `"25.00"`. Fixed by keeping the original raw row alongside the parsed version through `validate_batch()`, paired by position rather than by `transaction_id` (since duplicates share an ID and can't be looked up that way). This is on top of the two file-level check bugs (orphan-refund cascading failures, duplicate violations being double-counted) found during earlier manual testing — all four are a useful example of why a real test suite catches things ad hoc manual testing doesn't, even when the manual testing was done carefully against real data.
+
+Run the full suite:
+```bash
+AWS_DEFAULT_REGION=us-east-1 PYTHONPATH=src python3 -m pytest tests/ -v
+```
+`AWS_DEFAULT_REGION` is required for `test_handler.py` — `handler.py`'s `boto3` clients rely on the execution environment to supply a region (correct behavior in real Lambda, where AWS injects it automatically), so a bare local/CI environment needs it set explicitly.
 
 ### Running Code Locally
 

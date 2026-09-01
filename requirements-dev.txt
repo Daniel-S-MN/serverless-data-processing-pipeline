@@ -4,3 +4,5 @@
 
 pandas
 polars
+pytest
+moto[s3,sns]
